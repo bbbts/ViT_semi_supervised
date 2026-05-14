@@ -1,0 +1,19 @@
+- id: 0
+  name: background
+  isthing: 0
+  color: [0, 0, 0]          # black
+
+- id: 1
+  name: fire
+  isthing: 0
+  color: [255, 0, 0]        # red
+
+- id: 2
+  name: burned_area
+  isthing: 0
+  color: [255, 165, 0]      # orange
+
+- id: 3
+  name: water
+  isthing: 0
+  color: [0, 0, 255]        # blue

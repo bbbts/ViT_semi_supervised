@@ -1,0 +1,15 @@
+- color:
+  - 100
+  - 100
+  - 100
+  id: 0
+  isthing: 0
+  name: background
+
+- color:
+  - 250
+  - 100
+  - 100
+  id: 1
+  isthing: 0
+  name: fire
