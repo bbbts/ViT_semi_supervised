@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# semi - supervised
-
 import click
 from tqdm import tqdm
 from pathlib import Path
@@ -11,6 +9,9 @@ import torch
 import torchvision.transforms.functional as F
 import pandas as pd
 from tabulate import tabulate
+
+from scipy.ndimage import binary_erosion, binary_dilation
+from scipy.spatial.distance import cdist
 
 import segm.utils.torch as ptu
 from segm.data.utils import STATS, dataset_cat_description
@@ -23,6 +24,53 @@ from segm.data.flame import FlameDataset
 from segm.data.meta import MetaDataset
 
 IGNORE_LABEL = 255
+
+# ---------------------------------------------------------
+# Boundary Metrics
+# ---------------------------------------------------------
+def extract_boundary(mask):
+    """
+    Binary boundary extraction.
+    """
+    if mask.sum() == 0:
+        return np.zeros_like(mask, dtype=bool)
+
+    eroded = binary_erosion(mask)
+    boundary = mask.astype(bool) ^ eroded
+    return boundary
+
+
+
+def chamfer_distance(pred_mask, gt_mask):
+
+    pred_pts = np.argwhere(extract_boundary(pred_mask))
+    gt_pts = np.argwhere(extract_boundary(gt_mask))
+
+    if len(pred_pts) == 0 or len(gt_pts) == 0:
+        return np.nan
+
+    dists = cdist(pred_pts, gt_pts)
+
+    forward = np.mean(np.min(dists, axis=1) ** 2)
+    backward = np.mean(np.min(dists, axis=0) ** 2)
+
+    return forward + backward
+
+
+def assd(pred_mask, gt_mask):
+
+    pred_pts = np.argwhere(extract_boundary(pred_mask))
+    gt_pts = np.argwhere(extract_boundary(gt_mask))
+
+    if len(pred_pts) == 0 or len(gt_pts) == 0:
+        return np.nan
+
+    dists = cdist(pred_pts, gt_pts)
+
+    forward = np.mean(np.min(dists, axis=1))
+    backward = np.mean(np.min(dists, axis=0))
+
+    return (forward + backward) / 2.0
 
 
 # ---------------------------------------------------------
@@ -153,7 +201,7 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
         # -------- Overlay prediction --------
         pil_pred_overlay = Image.blend(pil_im, pil_seg, 0.5)
 
-        # -------- GT handling (same as first script) --------
+        # -------- GT handling  --------
         if gt_dir is not None:
             gt_path = gt_dir / (filename.stem + ".png")
             if gt_path.exists():
@@ -185,7 +233,7 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
     print(f"\n Inference complete. Saved results to {output_dir}\n")
 
     # ---------------------------------------------------------
-    # Evaluation (same structure as first script)
+    # Evaluation 
     # ---------------------------------------------------------
     if gt_dir is None:
         return
@@ -229,6 +277,10 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
 
     total_pixels = 0
     correct_pixels = 0
+    
+    
+    chamfer_scores = []
+    assd_scores = []
 
     for fname, pred in zip(filenames, preds):
         key = Path(fname).stem
@@ -237,6 +289,26 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
 
         gt = gt_maps[key]
         mask = gt != IGNORE_LABEL
+        
+        for cls in range(n_cls):
+
+            pred_cls = (pred == cls)
+            gt_cls = (gt == cls)
+        
+            if gt_cls.sum() == 0:
+                continue
+            
+            cd = chamfer_distance(pred_cls, gt_cls)
+            if not np.isnan(cd):
+                chamfer_scores.append(cd)
+            
+            #asd_val = average_surface_distance(pred_cls, gt_cls)
+            #if not np.isnan(asd_val):
+                #asd_scores.append(asd_val)
+            
+            assd_val = assd(pred_cls, gt_cls)
+            if not np.isnan(assd_val):
+                assd_scores.append(assd_val)
 
         total_pixels += mask.sum()
         correct_pixels += (pred[mask] == gt[mask]).sum()
@@ -267,8 +339,18 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
     precision = tp / (tp + fp + 1e-6)
     recall = tp / (tp + fn + 1e-6)
     f1 = 2 * precision * recall / (precision + recall + 1e-6)
-    #dice = 2 * intersection / (gt_count + pred_count + 1e-10)
     dice = 2 * intersection / (2 * intersection + fp + fn + 1e-6)
+    
+    mean_chamfer = (
+        np.mean(chamfer_scores)
+        if len(chamfer_scores) > 0
+        else np.nan
+    )
+    mean_assd = (
+        np.mean(assd_scores)
+        if len(assd_scores) > 0
+        else np.nan
+    )
 
     metrics = {
         "Pixel_Acc": pixel_acc,
@@ -278,6 +360,10 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
         "Precision": np.mean(precision),
         "Recall": np.mean(recall),
         "F1": np.mean(f1),
+        
+        "ChamferDistance": mean_chamfer,
+        "ASSD": mean_assd,
+    
         "PerClassDice": dice.tolist(),
         "PerClassIoU": per_class_iou.tolist(),
     }
@@ -308,3 +394,4 @@ def main(model_path, input_dir, output_dir, gpu, gt_dir):
 
 if __name__ == "__main__":
     main()
+
