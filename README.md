@@ -1,4 +1,4 @@
-# Segmenter: Transformer for Semantic Segmentation
+# Vision Transformer-Based Semi-Supervised Semantic Segmentation
 
 ![Figure 1 from paper](./overview.png)
 
