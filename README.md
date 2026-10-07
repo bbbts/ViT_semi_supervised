@@ -26,6 +26,112 @@ python -m segm.scripts.prepare_ade20k $DATASET
 ## Model Zoo
 We release models with a Vision Transformer backbone initialized from the [improved ViT](https://arxiv.org/abs/2106.10270) models.
 
+### Meta Dataset
+
+We provide the trained models and training artifacts for the semi-supervised semantic segmentation experiments conducted on the Meta dataset. The experiments use a Vision Transformer (ViT-Tiny) backbone with the Segmenter mask-transformer decoder under different labeled-data ratios.
+
+Each experiment directory contains the following training artifacts:
+
+- `checkpoint.pth` — trained model checkpoint
+- `evaluation_metrics.csv` — evaluation metrics
+- `eval_metrics.png` — evaluation-metric plots
+- `losses.csv` — training and validation loss values
+- `training_losses.png` — training-loss plots
+- `training_metrics.png` — training-metric plots
+- `variant.yml` — model and training configuration
+
+<table>
+  <tr>
+    <th>Experiment</th>
+    <th>Labeled Data</th>
+    <th>Unlabeled Data</th>
+    <th>Backbone</th>
+    <th>Decoder</th>
+    <th>Download</th>
+  </tr>
+
+  <tr>
+    <td>MODEL_FILE_0.4</td>
+    <td>40%</td>
+    <td>60%</td>
+    <td>ViT-Tiny-Patch16-384</td>
+    <td>Mask Transformer</td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+  </tr>
+
+  <tr>
+    <td>MODEL_FILE_0.5</td>
+    <td>50%</td>
+    <td>50%</td>
+    <td>ViT-Tiny-Patch16-384</td>
+    <td>Mask Transformer</td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+  </tr>
+
+  <tr>
+    <td>MODEL_FILE_0.6</td>
+    <td>60%</td>
+    <td>40%</td>
+    <td>ViT-Tiny-Patch16-384</td>
+    <td>Mask Transformer</td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+  </tr>
+
+  <tr>
+    <td>MODEL_FILE_0.7</td>
+    <td>70%</td>
+    <td>30%</td>
+    <td>ViT-Tiny-Patch16-384</td>
+    <td>Mask Transformer</td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+  </tr>
+</table>
+
+The corresponding experiment directories contain the following files:
+
+```text
+MODEL_FILE_0.4/
+├── checkpoint.pth
+├── eval_metrics.png
+├── evaluation_metrics.csv
+├── losses.csv
+├── training_losses.png
+├── training_metrics.png
+└── variant.yml
+
+MODEL_FILE_0.5/
+├── checkpoint.pth
+├── eval_metrics.png
+├── evaluation_metrics.csv
+├── losses.csv
+├── training_losses.png
+├── training_metrics.png
+└── variant.yml
+
+MODEL_FILE_0.6/
+├── checkpoint.pth
+├── eval_metrics.png
+├── evaluation_metrics.csv
+├── losses.csv
+├── training_losses.png
+├── training_metrics.png
+└── variant.yml
+
+MODEL_FILE_0.7/
+├── checkpoint.pth
+├── eval_metrics.png
+├── evaluation_metrics.csv
+├── losses.csv
+├── training_losses.png
+├── training_metrics.png
+└── variant.yml
+
+The Meta dataset used for these experiments is also available for download:
+
+<a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">Download the Meta dataset</a>
+
+The Meta dataset combines aerial imagery from FLAME, the Corsican Fire Database (CFD), AIWR, and BurnedAreaUAV v1.1 using the unified four-class taxonomy described in the accompanying paper.
+
 ### ADE20K
 
 Segmenter models with ViT backbone:
