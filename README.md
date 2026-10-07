@@ -24,17 +24,16 @@ python -m segm.scripts.prepare_ade20k $DATASET
 ```
 
 ## Model Zoo
-We release models with a Vision Transformer backbone initialized from the [improved ViT](https://arxiv.org/abs/2106.10270) models.
 
 ### Meta Dataset
 
-We provide the trained models and training artifacts for the semi-supervised semantic segmentation experiments conducted on the Meta dataset. The experiments use a Vision Transformer (ViT-Tiny) backbone with the Segmenter mask-transformer decoder under different labeled-data ratios.
+We provide trained models and experimental artifacts for the semi-supervised semantic segmentation experiments conducted on the Meta dataset. The experiments use a Vision Transformer (ViT-Tiny) backbone with the Segmenter mask-transformer decoder under different labeled-data ratios.
 
 Each experiment directory contains the following training artifacts:
 
 - `checkpoint.pth` — trained model checkpoint
-- `evaluation_metrics.csv` — evaluation metrics
 - `eval_metrics.png` — evaluation-metric plots
+- `evaluation_metrics.csv` — evaluation metrics
 - `losses.csv` — training and validation loss values
 - `training_losses.png` — training-loss plots
 - `training_metrics.png` — training-metric plots
@@ -42,14 +41,13 @@ Each experiment directory contains the following training artifacts:
 
 <table>
   <tr>
-    <th>Experiment</th>
+    <th>Name</th>
     <th>Labeled Data</th>
     <th>Unlabeled Data</th>
     <th>Backbone</th>
     <th>Decoder</th>
     <th>Download</th>
   </tr>
-
   <tr>
     <td>MODEL_FILE_0.4</td>
     <td>40%</td>
@@ -58,7 +56,6 @@ Each experiment directory contains the following training artifacts:
     <td>Mask Transformer</td>
     <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
   </tr>
-
   <tr>
     <td>MODEL_FILE_0.5</td>
     <td>50%</td>
@@ -67,7 +64,6 @@ Each experiment directory contains the following training artifacts:
     <td>Mask Transformer</td>
     <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
   </tr>
-
   <tr>
     <td>MODEL_FILE_0.6</td>
     <td>60%</td>
@@ -76,7 +72,6 @@ Each experiment directory contains the following training artifacts:
     <td>Mask Transformer</td>
     <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
   </tr>
-
   <tr>
     <td>MODEL_FILE_0.7</td>
     <td>70%</td>
@@ -87,48 +82,9 @@ Each experiment directory contains the following training artifacts:
   </tr>
 </table>
 
-The corresponding experiment directories contain the following files:
+The complete Meta dataset used for these experiments is also available:
 
-```text
-MODEL_FILE_0.4/
-├── checkpoint.pth
-├── eval_metrics.png
-├── evaluation_metrics.csv
-├── losses.csv
-├── training_losses.png
-├── training_metrics.png
-└── variant.yml
-
-MODEL_FILE_0.5/
-├── checkpoint.pth
-├── eval_metrics.png
-├── evaluation_metrics.csv
-├── losses.csv
-├── training_losses.png
-├── training_metrics.png
-└── variant.yml
-
-MODEL_FILE_0.6/
-├── checkpoint.pth
-├── eval_metrics.png
-├── evaluation_metrics.csv
-├── losses.csv
-├── training_losses.png
-├── training_metrics.png
-└── variant.yml
-
-MODEL_FILE_0.7/
-├── checkpoint.pth
-├── eval_metrics.png
-├── evaluation_metrics.csv
-├── losses.csv
-├── training_losses.png
-├── training_metrics.png
-└── variant.yml
-
-The Meta dataset used for these experiments is also available for download:
-
-<a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">Download the Meta dataset</a>
+[Download the Meta dataset](https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ)
 
 The Meta dataset combines aerial imagery from FLAME, the Corsican Fire Database (CFD), AIWR, and BurnedAreaUAV v1.1 using the unified four-class taxonomy described in the accompanying paper.
 
@@ -225,7 +181,6 @@ Segmenter models with DeiT backbone:
     <td><a href="https://www.rocq.inria.fr/cluster-willow/rstrudel/segmenter/checkpoints/ade20k/seg_base_deit_mask/checkpoint.pth">model</a></td>
     <td><a href="https://www.rocq.inria.fr/cluster-willow/rstrudel/segmenter/checkpoints/ade20k/seg_base_deit_mask/variant.yml">config</a></td>
     <td><a href="https://www.rocq.inria.fr/cluster-willow/rstrudel/segmenter/checkpoints/ade20k/seg_base_deit_mask/log.txt">log</a></td>
-
   </tr>
 </table>
 
@@ -290,6 +245,19 @@ python -m segm.eval.miou seg_tiny_mask/checkpoint.pth ade20k --singlescale
 python -m segm.eval.miou seg_tiny_mask/checkpoint.pth ade20k --multiscale
 ```
 
+To run inference using a trained Meta model:
+```python
+export DATASET=/path/to/Datasets/Meta
+
+python3 inference.py \
+  --model-path /path/to/MODEL_FILE_0.4/checkpoint.pth \
+  --input-dir $DATASET/images/test/ \
+  --output-dir /path/to/PREDICTION_0.4/meta/ \
+  --gt-dir $DATASET/masks/test/
+```
+
+The same inference procedure can be used with the `MODEL_FILE_0.5`, `MODEL_FILE_0.6`, and `MODEL_FILE_0.7` checkpoints.
+
 ## Train
 
 Train `Seg-T-Mask/16` on ADE20K on a single GPU:
@@ -299,6 +267,37 @@ python -m segm.train --log-dir seg_tiny_mask --dataset ade20k \
 ```
 
 To train `Seg-B-Mask/16`, simply set `vit_base_patch16_384` as backbone and launch the above command using a minimum of 4 V100 GPUs (~12 minutes per epoch) and up to 8 V100 GPUs (~7 minutes per epoch). The code uses [SLURM](https://slurm.schedmd.com/documentation.html) environment variables.
+
+### Meta Dataset Training
+
+The semi-supervised Meta experiments use a supervised teacher checkpoint and different labeled-data ratios. The following example shows training with 60% labeled data:
+
+```python
+cd /path/to/segmenter_semi_supervised/segm/
+export PYTHONPATH=/path/to/segmenter_SEMI_META:$PYTHONPATH
+
+python3 train.py \
+  --dataset-dir /path/to/Datasets/Meta/ \
+  --teacher-dir /path/to/segmenter_supervised_META/segm/MODEL_FILE/ \
+  --log-dir /path/to/segmenter_SEMI_META/segm/MODEL_FILE_0.6/ \
+  --dataset meta \
+  --backbone vit_tiny_patch16_384 \
+  --decoder mask_transformer \
+  --batch-size 4 \
+  --epochs 30 \
+  --learning-rate 0.001 \
+  --labeled-ratio 0.6 \
+  --eval-freq 1
+```
+
+The labeled-data ratio and output directory can be changed for the other experiments:
+
+```text
+--labeled-ratio 0.4  -> MODEL_FILE_0.4
+--labeled-ratio 0.5  -> MODEL_FILE_0.5
+--labeled-ratio 0.6  -> MODEL_FILE_0.6
+--labeled-ratio 0.7  -> MODEL_FILE_0.7
+```
 
 ## Logs
 
@@ -315,20 +314,22 @@ logs:
   seg-b: seg_base_mask/log.txt
 ```
 
+The Meta experiments additionally save training and evaluation results in each experiment directory, including `losses.csv`, `evaluation_metrics.csv`, `training_losses.png`, `training_metrics.png`, and `eval_metrics.png`.
+
 ## Attention Maps
 
 To visualize the attention maps for `Seg-T-Mask/16` encoder layer 0 and patch `(0, 21)`, you can use:
 
 ```python
-python -m segm.scripts.show_attn_map seg_tiny_mask/checkpoint.pth \ 
+python -m segm.scripts.show_attn_map seg_tiny_mask/checkpoint.pth \
 images/im0.jpg output_dir/ --layer-id 0 --x-patch 0 --y-patch 21 --enc
 ```
 
 Different options are provided to select the generated attention maps:
 * `--enc` or `--dec`: Select encoder or decoder attention maps respectively.
-* `--patch` or `--cls`: `--patch` generates attention maps for the patch with coordinates `(x_patch, y_patch)`. `--cls` combined with `--enc` generates attention maps for the CLS token of the encoder. `--cls` combined with `--dec` generates maps for each class embedding of the decoder.
+* `--patch` or `--cls`: `--patch` generates attention maps for the patch with coordinates `(x_patch, y_patch)`. `--cls` combined with `--enc` generates maps for the CLS token of the encoder. `--cls` combined with `--dec` generates maps for each class embedding of the decoder.
 * `--x-patch` and `--y-patch`: Coordinates of the patch to draw attention maps from. This flag is ignored when `--cls` is used.
-* `--layer-id`: Select the layer for which the attention maps are generated.
+* `--layer-id`: Coordinates of the layer for which the attention map is generated.
 
 For example, to generate attention maps for the decoder class embeddings, you can use:
 
@@ -337,11 +338,11 @@ python -m segm.scripts.show_attn_map seg_tiny_mask/checkpoint.pth \
 images/im0.jpg output_dir/ --layer-id 0 --dec --cls
 ```
 
-Attention maps for patch `(0, 21)` in `Seg-L-Mask/16` encoder layers 1, 4, 8, 12 and 16: 
+Attention maps for patch `(0, 21)` in `Seg-L-Mask/16` encoder layers 1, 4, 8, 12 and 16:
 
 ![Attention maps of patch x=8 and y=21 and encoder layers 1, 4, 8, 12 and 16](./attn_maps_enc.png)
 
-Attention maps for the class embeddings in `Seg-L-Mask/16` decoder layer 0: 
+Attention maps for the class embeddings in `Seg-L-Mask/16` decoder layer 0:
 
 ![Attention maps of cls tokens 7, 15, 18, 22, 36 and 57 and Mask decoder layer 0](./attn_maps_dec.png)
 
@@ -369,8 +370,6 @@ Zero shot video segmentation on [DAVIS](https://davischallenge.org/) video datas
 }
 ```
 
-
 ## Acknowledgements
 
-The Vision Transformer code is based on [timm](https://github.com/rwightman/pytorch-image-models) library and the semantic segmentation training and evaluation pipeline 
-is using [mmsegmentation](https://github.com/open-mmlab/mmsegmentation).
+The Vision Transformer code is based on [timm](https://github.com/rwightman/pytorch-image-models) library and the semantic segmentation training and evaluation pipeline is using [mmsegmentation](https://github.com/open-mmlab/mmsegmentation).
