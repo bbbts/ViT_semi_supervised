@@ -54,7 +54,7 @@ Each experiment directory contains the following training artifacts:
     <td>60%</td>
     <td>ViT-Tiny-Patch16-384</td>
     <td>Mask Transformer</td>
-    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1788CEFczF9uI-I0BY9FlgCo3c78393Ga">model files</a></td>
   </tr>
   <tr>
     <td>MODEL_FILE_0.5</td>
@@ -62,7 +62,7 @@ Each experiment directory contains the following training artifacts:
     <td>50%</td>
     <td>ViT-Tiny-Patch16-384</td>
     <td>Mask Transformer</td>
-    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1788CEFczF9uI-I0BY9FlgCo3c78393Ga">model files</a></td>
   </tr>
   <tr>
     <td>MODEL_FILE_0.6</td>
@@ -70,7 +70,7 @@ Each experiment directory contains the following training artifacts:
     <td>40%</td>
     <td>ViT-Tiny-Patch16-384</td>
     <td>Mask Transformer</td>
-    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1788CEFczF9uI-I0BY9FlgCo3c78393Ga">model files</a></td>
   </tr>
   <tr>
     <td>MODEL_FILE_0.7</td>
@@ -78,7 +78,7 @@ Each experiment directory contains the following training artifacts:
     <td>30%</td>
     <td>ViT-Tiny-Patch16-384</td>
     <td>Mask Transformer</td>
-    <td><a href="https://drive.google.com/drive/u/1/folders/1cDXOGkIqONxV0w9yTdpo6sUfOpoPRJjZ">model files</a></td>
+    <td><a href="https://drive.google.com/drive/u/1/folders/1788CEFczF9uI-I0BY9FlgCo3c78393Ga">model files</a></td>
   </tr>
 </table>
 
